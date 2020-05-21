@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System;
+using UnityEngine.UI;
 
 public class Client : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class Client : MonoBehaviour
     private delegate void PacketHandler(Packet packet);
     private static Dictionary<int, PacketHandler> packetHandlers;
 
+    public InputField ipField;
+
     private void Awake()
     {
         if (instance == null)
@@ -34,7 +37,7 @@ public class Client : MonoBehaviour
 
     private void Start()
     {
-
+        ipField.text = ip;
     }
 
     private void OnApplicationQuit()
@@ -49,8 +52,15 @@ public class Client : MonoBehaviour
 
         InitializeClientData();
 
+        ReadIPFromField();
+
         isConnected = true;
         tcp.Connect();
+    }
+
+    private void ReadIPFromField()
+    {
+        ip = ipField.text;
     }
 
     public class TCP
@@ -71,6 +81,7 @@ public class Client : MonoBehaviour
             };
 
             receiveBuffer = new byte[dataBufferSize];
+            Debug.Log($"Connecting to {instance.ip}:{instance.port}");
             socket.BeginConnect(instance.ip, instance.port, ConnectCallback, socket);
         }
 

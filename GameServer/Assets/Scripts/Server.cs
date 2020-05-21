@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Linq;
 
 class Server
 {
@@ -27,13 +28,23 @@ class Server
         InitializeServerData();
 
         tcpListener = new TcpListener(IPAddress.Any, Port);
+
+
+
         tcpListener.Start();
         tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
         udpListener = new UdpClient(Port);
         udpListener.BeginReceive(UDPReceiveCallback, null);
 
-        Debug.Log($"Server started on {Port}.");
+
+
+        Debug.Log($"Server started on {Port}. IP: {GetServerIP()}");
+    }
+
+    private static string GetServerIP()
+    {
+        return Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString();
     }
 
     private static void TCPConnectCallback(IAsyncResult result)
